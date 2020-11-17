@@ -3,7 +3,7 @@
 # Description: The script for the initial setup and installation of all necessary applications on the Arch Linux.
 # Author: Arthur Likhner <arthur@likhner.com>
 # License: No License (No Permission)
-# Last change: 16.11.2020
+# Last change: 17.11.2020
 
 echo "Arch Linux Post Installation"
 
@@ -159,7 +159,8 @@ clear
 
 echo "Cache cleaning and removal of unused packages"
 sudo pacman --noconfirm -Rns $(sudo pacman --noconfirm -Qtdq)
-yay -Sc --noconfirm
+sudo pacman -Scc --noconfirm
+yay -Scc --noconfirm
 rm -rf ~/.cache/*
 sudo rm -rf /tmp/*
 sudo rm -rf /root/.cache/*
