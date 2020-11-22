@@ -3,7 +3,7 @@
 # Description: The script for the initial setup and installation of all necessary applications on the Arch Linux.
 # Author: Arthur Likhner <arthur@likhner.com>
 # License: No License (No Permission)
-# Last change: 17.11.2020
+# Last change: 22.11.2020
 
 echo "Arch Linux Post Installation"
 
@@ -23,8 +23,14 @@ clear
 
 
 echo "Installing the mirrorlist"
+sudo pacman --noconfirm -Suy
+sudo pacman --noconfirm -S pacman-contrib
 sudo curl -o /etc/pacman.d/mirrorlist "https://www.archlinux.org/mirrorlist/?country=all&protocol=https&ip_version=4&use_mirror_status=on"
 sudo sed -i -e 's/#Server/Server/g' /etc/pacman.d/mirrorlist
+sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.org
+sudo rankmirrors -n 6 /etc/pacman.d/mirrorlist.org | sudo tee -a /etc/pacman.d/mirrorlist
+sudo rm -rf /etc/pacman.d/mirrorlist.org
+sudo pacman --noconfirm -Rs pacman-contrib
 echo "Done"
 clear
 
