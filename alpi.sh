@@ -3,7 +3,7 @@
 # Description: The script for the initial setup and installation of all necessary applications on the Arch Linux.
 # Author: Arthur Likhner <arthur@likhner.com>
 # License: No License (No Permission)
-# Last change: 22.11.2020
+# Last change: 24.12.2020
 
 echo "Arch Linux Post Installation"
 
@@ -25,7 +25,7 @@ clear
 echo "Installing the mirrorlist"
 sudo pacman --noconfirm -Suy
 sudo pacman --noconfirm -S pacman-contrib
-sudo curl -o /etc/pacman.d/mirrorlist "https://www.archlinux.org/mirrorlist/?country=all&protocol=https&ip_version=4&use_mirror_status=on"
+sudo curl -o /etc/pacman.d/mirrorlist "https://archlinux.org/mirrorlist/?country=all&protocol=https&ip_version=4&use_mirror_status=on"
 sudo sed -i -e 's/#Server/Server/g' /etc/pacman.d/mirrorlist
 sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.org
 sudo rankmirrors -n 6 /etc/pacman.d/mirrorlist.org | sudo tee -a /etc/pacman.d/mirrorlist
@@ -37,7 +37,7 @@ clear
 
 echo "Start of installation"
 sudo pacman --noconfirm -Suy
-sudo pacman --noconfirm -S bash-completion xorg-server mesa xorg-twm xterm nvidia-dkms nvidia-utils nvidia-settings intel-ucode gdm net-tools network-manager-applet
+sudo pacman --noconfirm -S bash-completion xorg-server mesa nvidia-dkms nvidia-utils nvidia-settings intel-ucode gdm net-tools network-manager-applet
 echo "Done"
 read -p "Press any key to continue"
 clear
@@ -66,7 +66,7 @@ sudo sed -i 's/^\(\s*\)#\(\[multilib]\)/\1\2/' /etc/pacman.conf
 sudo sed -i "93s/#Include/Include/" /etc/pacman.conf
 sudo sed -i -e 's/#Color/Color/g' /etc/pacman.conf
 sudo pacman --noconfirm -Suy
-sudo pacman --noconfirm -S bind-tools chromium dnscrypt-proxy vlc f2fs-tools firefox thunderbird wget ntfs-3g p7zip unrar unzip pavucontrol gufw whois xdg-user-dirs linux-zen-headers linux-firmware openssh code keepassxc mc qbittorrent telegram-desktop git gvfs-mtp lib32-nvidia-utils gnupg \
+sudo pacman --noconfirm -S bind-tools chromium vlc f2fs-tools wget ntfs-3g p7zip unrar unzip pavucontrol gufw xdg-user-dirs linux-zen-headers linux-firmware openssh keepassxc mc qbittorrent telegram-desktop git gvfs-mtp lib32-nvidia-utils gnupg \
 fontconfig ttf-hanazono ttf-liberation ttf-ubuntu-font-family sdl2_ttf sdl_ttf ttf-arphic-ukai ttf-arphic-uming ttf-bitstream-vera ttf-croscore ttf-dejavu ttf-droid ttf-anonymous-pro noto-fonts-emoji otf-font-awesome opendesktop-fonts freetype2 \
 libdca libmad libvorbis libfdk-aac libde265 libmpeg2 libtheora libvpx x264 x265 xvidcore flac wavpack celt lame a52dec faac faad2 aom openjpeg2 libwebp libjpeg-turbo gstreamer gst-libav gst-plugins-bad gst-plugins-base gst-plugins-good gst-plugins-ugly gstreamer-vaapi gst-plugins-bad \
 libgphoto2 gvfs-gphoto2 libmtp udftools gettext acl glu ncurses sdl2 v4l-utils vkd3d gcc-libs libnl libpcap libtiff libusb libxcursor libxrandr libxrender lz4 zstd libsm libxdamage libxi libxml2 alsa-lib alsa-plugins giflib gnutls libldap libpng libpulse libxcomposite libxinerama libxslt \
@@ -79,14 +79,6 @@ clear
 echo "Enabling ID card support"
 sudo systemctl enable pcscd.socket
 sudo systemctl start pcscd.socket
-echo "Done"
-clear
-
-
-echo "Setting up DNSCrypt"
-sudo curl -o /etc/dnscrypt-proxy/dnscrypt-proxy.toml "https://raw.githubusercontent.com/likhner/configs/master/dnscrypt-proxy.toml"
-sudo systemctl enable dnscrypt-proxy.service
-sudo systemctl start dnscrypt-proxy.service
 echo "Done"
 clear
 
@@ -120,8 +112,6 @@ echo '{
     "ExtensionInstallForcelist": [
         // uBlock Origin
         "cjpalhdlnbpafiamejdnhcphjbkeiagm;https://clients2.google.com/service/update2/crx",
-        // Privacy Possum
-        "ommfjecdpepadiafbnidoiggfpbnkfbj;https://clients2.google.com/service/update2/crx",
         // HTTPS Everywhere
         "gcbommkclmclpchllfjekcdonpmejbdp;https://clients2.google.com/service/update2/crx",
         // Privacy Badger
@@ -133,19 +123,18 @@ echo '{
         // GNOME Shell integration
         "gphhapmejobijbbhgpjhcjognlahblep;https://clients2.google.com/service/update2/crx",
         // Decentraleyes
-        "ldpochfccmkkmhdbclfhpagapcfdljkj;https://clients2.google.com/service/update2/crx"
+        "ldpochfccmkkmhdbclfhpagapcfdljkj;https://clients2.google.com/service/update2/crx",
+        // Just Black
+        "aghfnjkcakhmadgdomlmlhhaocbkloab;https://clients2.google.com/service/update2/crx",
+        // Google search link fix
+        "cekfddagaicikmgoheekchngpadahmlf;https://clients2.google.com/service/update2/crx",
+        // LanguageTool
+        "oldceeleldhonbafppcapldpdifcinji;https://clients2.google.com/service/update2/crx",
+        // Dont add custom search engines
+        "dnodlcololidkjgbpeoleabmkocdhacc;https://clients2.google.com/service/update2/crx",
     ],
-    "SSLVersionMin": "tls1.2",
-    "DnsOverHttpsMode": "secure",
-    "DnsOverHttpsTemplates": "https://1.1.1.1/dns-query"
+    "SSLVersionMin": "tls1.2"
 }' | sudo tee -a /etc/chromium/policies/managed/policies.json
-echo "Done"
-clear
-
-
-echo "Setting up Firefox"
-sudo curl -o /usr/lib64/firefox/browser/defaults/preferences/autoconfig.js "https://raw.githubusercontent.com/likhner/configs/master/Firefox/autoconfig.js"
-sudo curl -o /usr/lib64/firefox/distribution/policies.json "https://raw.githubusercontent.com/likhner/configs/master/Firefox/policies.json"
 echo "Done"
 clear
 
