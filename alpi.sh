@@ -3,7 +3,7 @@
 # Description: The script for the initial setup and installation of all necessary applications on the Arch Linux.
 # Author: Arthur Likhner <arthur@likhner.com>
 # License: No License (No Permission)
-# Last change: 24.12.2020
+# Last change: 25.12.2020
 
 echo "Arch Linux Post Installation"
 
@@ -86,6 +86,14 @@ clear
 echo "Setting up firewall"
 sudo systemctl enable ufw.service
 sudo systemctl start ufw.service
+echo "Done"
+clear
+
+
+echo "Adding Blu-ray support to VLC"
+sudo pacman --noconfirm -S libaacs
+mkdir ~/.config/aacs
+curl -o ~/.config/aacs/KEYDB.cfg "https://gist.githubusercontent.com/likhner/822ccba36c9c88df3975c357c9310642/raw/KEYDB.cfg"
 echo "Done"
 clear
 
