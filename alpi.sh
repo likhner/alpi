@@ -3,14 +3,14 @@
 # Description: The script for the initial setup and installation of all necessary applications on the Arch Linux.
 # Author: Arthur Likhner <arthur@likhner.com>
 # License: No License (No Permission)
-# Last change: 25.12.2020
+# Last change: 28.11.2021
 
 echo "Arch Linux Post Installation"
 
 
 echo "Setting up DNS"
-echo "nameserver 1.1.1.1
-nameserver 1.0.0.1" | sudo tee -a /etc/resolv.conf
+echo "nameserver 1.1.1.2
+nameserver 1.0.0.2" | sudo tee -a /etc/resolv.conf
 echo "Done"
 clear
 
@@ -24,20 +24,15 @@ clear
 
 echo "Installing the mirrorlist"
 sudo pacman --noconfirm -Suy
-sudo pacman --noconfirm -S pacman-contrib
 sudo curl -o /etc/pacman.d/mirrorlist "https://archlinux.org/mirrorlist/?country=all&protocol=https&ip_version=4&use_mirror_status=on"
 sudo sed -i -e 's/#Server/Server/g' /etc/pacman.d/mirrorlist
-sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.org
-sudo rankmirrors -n 6 /etc/pacman.d/mirrorlist.org | sudo tee -a /etc/pacman.d/mirrorlist
-sudo rm -rf /etc/pacman.d/mirrorlist.org
-sudo pacman --noconfirm -Rs pacman-contrib
 echo "Done"
 clear
 
 
 echo "Start of installation"
 sudo pacman --noconfirm -Suy
-sudo pacman --noconfirm -S bash-completion xorg-server mesa nvidia-dkms nvidia-utils nvidia-settings intel-ucode gdm net-tools network-manager-applet
+sudo pacman --noconfirm -S linux-zen-headers linux-firmware bash-completion xorg-server mesa nvidia-dkms nvidia-utils nvidia-settings intel-ucode gdm net-tools network-manager-applet
 echo "Done"
 read -p "Press any key to continue"
 clear
@@ -63,37 +58,22 @@ clear
 
 echo "Installation of applications"
 sudo sed -i 's/^\(\s*\)#\(\[multilib]\)/\1\2/' /etc/pacman.conf
-sudo sed -i "93s/#Include/Include/" /etc/pacman.conf
+sudo sed -i "94s/#Include/Include/" /etc/pacman.conf
 sudo sed -i -e 's/#Color/Color/g' /etc/pacman.conf
 sudo pacman --noconfirm -Suy
-sudo pacman --noconfirm -S bind-tools chromium vlc f2fs-tools wget ntfs-3g p7zip unrar unzip pavucontrol gufw xdg-user-dirs linux-zen-headers linux-firmware openssh keepassxc mc qbittorrent telegram-desktop git gvfs-mtp lib32-nvidia-utils gnupg \
+sudo pacman --noconfirm -S bind vlc f2fs-tools wget ntfs-3g p7zip unrar unzip pavucontrol gufw xdg-user-dirs openssh keepassxc mc qbittorrent telegram-desktop git gvfs-mtp lib32-nvidia-utils gnupg steam code \
 fontconfig ttf-hanazono ttf-liberation ttf-ubuntu-font-family sdl2_ttf sdl_ttf ttf-arphic-ukai ttf-arphic-uming ttf-bitstream-vera ttf-croscore ttf-dejavu ttf-droid ttf-anonymous-pro noto-fonts-emoji otf-font-awesome opendesktop-fonts freetype2 \
 libdca libmad libvorbis libfdk-aac libde265 libmpeg2 libtheora libvpx x264 x265 xvidcore flac wavpack celt lame a52dec faac faad2 aom openjpeg2 libwebp libjpeg-turbo gstreamer gst-libav gst-plugins-bad gst-plugins-base gst-plugins-good gst-plugins-ugly gstreamer-vaapi gst-plugins-bad \
 libgphoto2 gvfs-gphoto2 libmtp udftools gettext acl glu ncurses sdl2 v4l-utils vkd3d gcc-libs libnl libpcap libtiff libusb libxcursor libxrandr libxrender lz4 zstd libsm libxdamage libxi libxml2 alsa-lib alsa-plugins giflib gnutls libldap libpng libpulse libxcomposite libxinerama libxslt \
-chrome-gnome-shell gnome-control-center gnome-screenshot gnome-shell gnome-system-monitor gnome-tweaks nautilus evince eog baobab gnome-disk-utility gnome-calculator file-roller gedit seahorse ccid pcsc-tools
+gnome-control-center gnome-terminal gnome-screenshot gnome-shell gnome-system-monitor gnome-tweaks nautilus evince eog baobab gnome-disk-utility gnome-calculator file-roller gedit seahorse
 echo "Done"
 read -p "Press any key to continue"
-clear
-
-
-echo "Enabling ID card support"
-sudo systemctl enable pcscd.socket
-sudo systemctl start pcscd.socket
-echo "Done"
 clear
 
 
 echo "Setting up firewall"
 sudo systemctl enable ufw.service
 sudo systemctl start ufw.service
-echo "Done"
-clear
-
-
-echo "Adding Blu-ray support to VLC"
-sudo pacman --noconfirm -S libaacs
-mkdir ~/.config/aacs
-curl -o ~/.config/aacs/KEYDB.cfg "https://gist.githubusercontent.com/likhner/822ccba36c9c88df3975c357c9310642/raw/KEYDB.cfg"
 echo "Done"
 clear
 
@@ -112,41 +92,6 @@ echo "Done"
 clear
 
 
-echo "Setting up Chromium"
-sudo mkdir /etc/chromium
-sudo mkdir /etc/chromium/policies
-sudo mkdir /etc/chromium/policies/managed
-echo '{
-    "ExtensionInstallForcelist": [
-        // uBlock Origin
-        "cjpalhdlnbpafiamejdnhcphjbkeiagm;https://clients2.google.com/service/update2/crx",
-        // HTTPS Everywhere
-        "gcbommkclmclpchllfjekcdonpmejbdp;https://clients2.google.com/service/update2/crx",
-        // Privacy Badger
-        "pkehgijcmpdhfbdbbnkijodmdjhbjlgp;https://clients2.google.com/service/update2/crx",
-        // WebRTC Control
-        "fjkmabmdepjfammlpliljpnbhleegehm;https://clients2.google.com/service/update2/crx",
-        // AutoScroll
-        "occjjkgifpmdgodlplnacmkejpdionan;https://clients2.google.com/service/update2/crx",
-        // GNOME Shell integration
-        "gphhapmejobijbbhgpjhcjognlahblep;https://clients2.google.com/service/update2/crx",
-        // Decentraleyes
-        "ldpochfccmkkmhdbclfhpagapcfdljkj;https://clients2.google.com/service/update2/crx",
-        // Just Black
-        "aghfnjkcakhmadgdomlmlhhaocbkloab;https://clients2.google.com/service/update2/crx",
-        // Google search link fix
-        "cekfddagaicikmgoheekchngpadahmlf;https://clients2.google.com/service/update2/crx",
-        // LanguageTool
-        "oldceeleldhonbafppcapldpdifcinji;https://clients2.google.com/service/update2/crx",
-        // Dont add custom search engines
-        "dnodlcololidkjgbpeoleabmkocdhacc;https://clients2.google.com/service/update2/crx",
-    ],
-    "SSLVersionMin": "tls1.2"
-}' | sudo tee -a /etc/chromium/policies/managed/policies.json
-echo "Done"
-clear
-
-
 echo "Installation of Yay and application from AUR"
 git clone https://aur.archlinux.org/yay.git
 cd yay
@@ -154,7 +99,8 @@ makepkg -si
 cd ..
 rm -Rfv yay/
 read -p "Press any key to continue"
-yay -S --noconfirm exfat-linux-dkms exfat-utils-nofuse spotify notion-app la-capitaine-icon-theme-git qogir-gtk-theme-git gnome-terminal-transparency eparakstitajs3 eparaksts-token-signing latvia-eid-middleware
+yay -S --noconfirm exfat-linux-dkms exfat-utils-nofuse google-chrome rukbi spotify notion-app la-capitaine-icon-theme qogir-gtk-theme chrome-gnome-shell minecraft-launcher
+sudo /usr/share/X11/xkb/rukbi/install/install
 echo "Done"
 read -p "Press any key to continue"
 clear
